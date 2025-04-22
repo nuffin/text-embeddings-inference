@@ -1,0 +1,3 @@
+FROM text-embeddings-inference:latest AS stage
+
+ENTRYPOINT ["/bin/bash", "-c"]

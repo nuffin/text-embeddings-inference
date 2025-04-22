@@ -134,9 +134,22 @@ COPY --from=grpc-builder /usr/src/target/release/text-embeddings-router /usr/loc
 ENTRYPOINT ["text-embeddings-router"]
 CMD ["--json-output"]
 
-FROM base
+FROM base AS text-embeddings-inference-base
 
 COPY --from=http-builder /usr/src/target/release/text-embeddings-router /usr/local/bin/text-embeddings-router
+
+ENTRYPOINT ["text-embeddings-router"]
+CMD ["--json-output"]
+
+FROM text-embeddings-inference-base
+
+RUN apt update \
+    && apt install -y libnvidia-compute-570 \
+        iputils-ping \
+        iproute2 \
+	less \
+	bat \
+    && cd /usr/bin && ln -s batcat bat
 
 ENTRYPOINT ["text-embeddings-router"]
 CMD ["--json-output"]
